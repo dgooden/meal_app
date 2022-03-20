@@ -34,7 +34,7 @@ function handleError(response,funcName,err)
         restError(response,400,errorMessage,funcName);
         return;
     }
-    logger.error(funcName + " error: ",err.stack);        
+    logger.error(funcName + " error: ", err.stack);
     restError(response,500,err.stack,funcName);    
 }
 
