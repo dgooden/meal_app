@@ -2,37 +2,39 @@ import React from "react"
 
 export default function SearchForm(props)
 {
-    const [ searchData, setSearchData ] = React.useState(
-        {
-            "search": ""
-        }
-    );
-
+    const [ searchData, setSearchData ] = React.useState("");
 
     /* 
         props.searchData
         props.onHandleSubmit()
     */
    function onHandleSubmit(event) {
+       console.log("event:",event);
        event.preventDefault();
-       props.onHandleSubmit(searchData.search);
+       props.onHandleSubmit(searchData);
    }
 
    function onHandleChange(event)
    {
-       const { name, value } = event.target;
-       setSearchData(prevSearchData => {
-           return {
-               ...prevSearchData,
-               [name]: value
-           }
+       const { value } = event.target;
+       setSearchData(() => {
+           return value;
        });
+   }
+
+   function onHandleClear()
+   {
+       setSearchData(() => {
+           return "";
+       });
+       props.onHandleSubmit("");
    }
 
     return (
         <form onSubmit={onHandleSubmit}>
-            <input type="text" placeholder="Search..." onChange={onHandleChange} name="search" value={searchData.search}/>
+            <input type="text" placeholder="Search..." onChange={onHandleChange} name="search" value={searchData}/>
             <button>Search</button>
+            <button type="button" onClick={onHandleClear}>Clear</button>
         </form>
     )
 }

@@ -1,0 +1,16 @@
+.ingredientList {
+    list-style-type: none;
+    display: flex;
+}
+
+.ingredientItem {
+    flex: auto;
+}
+
+.dishItem {
+    list-style-type: none;
+}
+
+.dishIngredientItem {
+    list-style-type: none;
+}
