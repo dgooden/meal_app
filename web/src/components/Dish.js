@@ -9,25 +9,24 @@ export default function Dish(props)
 {
     const [dishData, setDishData] = React.useState([]);
 
-    function onHandleSearchSubmit(searchData)
+    async function onHandleSearchSubmit(searchData)
     {
-        console.log("search submit:",searchData);
-        searchDishes(searchData);
+        const dishes = await searchDishes(searchData);
+        setDishData(dishes.data);
     }
 
-    async function onHandleDelete(dishUUID)
+    async function onHandleDelete(dishID)
     {
-        console.log("delete dish:",dishUUID);
-        await deleteDish(dishUUID);
-        const data = await getDishes();
-        setDishData(data);
+        await deleteDish(dishID);
+        const dishes = await getDishes();
+        setDishData(dishes.data);
     }
 
     React.useEffect( () => {
         async function getDishData()
         {
-            const data = await getDishes();
-            setDishData(data);
+            const dishes = await getDishes();
+            setDishData(dishes.data);
         }
         getDishData();
     }, []);
@@ -35,7 +34,7 @@ export default function Dish(props)
     const dishList = dishData.map( dish => {
         return (
             <DishListItem
-                key={dish.uuid}
+                key={dish.id}
                 data={dish}
                 onDelete={onHandleDelete}
             />

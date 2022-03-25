@@ -9,6 +9,7 @@ import { create as createDish,
          getIngredients as getDishIngredients,
          getIngredient as getDishIngredient,
          addIngredient as addDishIngredient,
+         updateIngredient as updateDishIngredient,
          removeIngredient as removeDishIngredient } from "./controller/dishController.mjs";
 //import https from "https";
 //import fs from "fs";
@@ -54,6 +55,7 @@ app.delete("/dish/:dish_id", (request,response) => removeDish(request,response))
 app.get(   "/dish/:dish_id/ingredient", (request,response) => getDishIngredients(request,response));
 app.get(   "/dish/:dish_id/ingredient/:ingredient_id", (request,response) => getDishIngredient(request,response));
 app.post(  "/dish/:dish_id/ingredient", (request,response) => addDishIngredient(request,response));
+app.put(   "/dish/:dish_id/ingredient/:ingredient_id", (request,response) => updateDishIngredient(request,response));
 app.delete("/dish/:dish_id/ingredient/:ingredient_id", (request,response) => removeDishIngredient(request,response));
 
 //const httpsServer = https.createServer( { "key": fs.readFileSync("../cert/server.key"), "cert": fs.readFileSync("../cert/server.cert") },app);

@@ -1,5 +1,7 @@
 import React from "react";
 import {useLocation,Link} from "react-router-dom";
+import {convertOuncesToGrams,convertGramsToOunces } from "../conversion.js";
+import "../style.css";
 
 import { getDish, updateDish } from "../fetchData.js";
 
@@ -8,13 +10,13 @@ export default function UpdateDish()
     const location = useLocation();
     const state = location.state;
 
-    let calories = 0;
+    let total_calories = 0;
 
     const [ dishData, setDishData ] = React.useState(
         {
             "name": "",
-            "portion": 0,
-            "portion_unit": "gram",
+            "total_weight": 0,
+            "total_weight_unit": "gram",
             "ingredients": []
         }
     );
@@ -26,19 +28,18 @@ export default function UpdateDish()
         }
     );
 
-    const getDishData = React.useCallback( async () => {
-        const data = await getDish(state.uuid);
-        setDishData(data);
-    }, [state.uuid]);
-
     React.useEffect( () => {
+        async function getDishData()
+        {
+            const data = await getDish(state.id);
+            setDishData(data);
+        }
         getDishData();
-    }, [getDishData]);
+    }, []);
 
     async function updateDishData(data)
     {
         const output = await updateDish(data);
-        console.log("updateDishData output:",output);
         if ( output.isError ) {
             setErrorData(() => {
                 return output.result;
@@ -60,76 +61,67 @@ export default function UpdateDish()
     function onHandleSubmit(event)
     {
         event.preventDefault();
-        console.log("dish update submit");
         updateDishData(dishData);
     }
 
-    async function onHandleRemoveIngredient(uuid)
+    async function onHandleRemoveIngredient(id)
     {
-        console.log("remove ingredient",uuid);
         let newDishData = {...dishData};
-        newDishData.ingredients = dishData.ingredients.filter( element => element.uuid !== uuid );
-        console.log(newDishData.ingredients);
+        newDishData.ingredients = dishData.ingredients.filter( element => element.id !== id );
         updateDishData(newDishData);
         setDishData(newDishData);
     }
 
     function RemoveButton(props)
     {
-        const uuid = props.uuid;
+        const id = props.id;
         return (
-            <button type="button" onClick={ async () => await onHandleRemoveIngredient(uuid)}>Remove</button>
+            <button type="button" onClick={ async () => await onHandleRemoveIngredient(id)}>Remove</button>
         )
-    }
-
-    function EditButton(props)
-    {
-        const uuid = props.uuid;
-        return (
-            <Link to="/editDishIngredient" state={{"ingredientUUID": uuid, "dishUUID":state.uuid}}>
-            <button type="button">Edit</button>
-            </Link>
-        )        
     }
 
     function DishIngredientListItem(props)
     {
-        const { name, number_servings, uuid} = props.data;
-        let servingText = number_servings > 1 ? "servings": "serving"
+        const { name, number_servings, calories_per_serving, id} = props.data;
+        let calories = ( calories_per_serving * number_servings );        
         return (
             <ul className="ingredientItem">
                 <li>
-                    {name} {number_servings} {servingText} <EditButton uuid={uuid}/> <RemoveButton uuid={uuid}/>
+                    <Link to="/editDishIngredient" state={{"ingredientID": id, "dishID":state.id, "from":"/updateDish"}}>
+                        {name}
+                    </Link>
+                    {Math.trunc(calories)} calories <RemoveButton id={id}/>
                 </li>
             </ul>
         )
     }
 
     const ingredientList = dishData.ingredients.map(ingredient => {
-        calories += ( ingredient.calories_per_serving * ingredient.number_servings );
+        total_calories += ( ingredient.calories_per_serving * ingredient.number_servings );
         return (
-            <DishIngredientListItem key={ingredient.uuid} data={ingredient}/>
+            <DishIngredientListItem key={ingredient.id} data={ingredient}/>
         )
     });
 
     return (
         <div>
             <h1>Update Dish</h1>
-            <div className="error">{errorData.code > 200 ? errorData.errorMessage  : ""}</div>            
+            <Link to="/dishDetails" state={{"id":state.id}}>Back</Link>
+            <div className="error">{errorData.code > 200 ? errorData.errorMessage  : ""}</div>      
             <form onSubmit={onHandleSubmit}>
                 <label htmlFor="name">Name</label>
                 <input type="text" id="name" name="name" value={dishData.name} placeholder="Name" onChange={onHandleChange}/>
-                <label htmlFor="portion">Portion</label>
-                <input type="text" id="porion" name="portion" value={dishData.portion} placeholder="Portion" onChange={onHandleChange}/>
-                <select id="portion_unit" name="portion_unit" value={dishData.portion_unit} onChange={onHandleChange}>
+                <label htmlFor="total_weight">Total weight</label>
+                <input type="text" id="porion" name="total_weight" value={dishData.total_weight} placeholder="Total weight" onChange={onHandleChange}/>
+                <select id="total_weight_unit" name="total_weight_unit" value={dishData.total_weight_unit} onChange={onHandleChange}>
                     <option value="gram">Grams</option>
                     <option value="ounce">Ounces</option>
                 </select>
-                <label htmlFor="calories">Calories</label>
-                <input readOnly type="text" id="calories" value={Math.trunc(calories)}/>
-                <button type="submit">Update Dish</button>
+                <label htmlFor="calories">Total calories</label>
+                <input disabled readOnly type="text" id="calories" value={Math.trunc(total_calories)}/>
+                <button type="submit">Update Dish</button>                
             </form>
-            <Link to="/addDishIngredient" state={{"uuid":state.uuid}}>
+            <Link to="/addDishIngredient" state={{"id":state.id}}>
                 <button type="button">Add Ingredient</button>
             </Link>
             {ingredientList}

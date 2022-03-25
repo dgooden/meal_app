@@ -9,7 +9,6 @@ export default function SearchForm(props)
         props.onHandleSubmit()
     */
    function onHandleSubmit(event) {
-       console.log("event:",event);
        event.preventDefault();
        props.onHandleSubmit(searchData);
    }

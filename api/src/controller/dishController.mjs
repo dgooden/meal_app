@@ -7,6 +7,7 @@ import {create as createDish,
         getIngredients as getDishIngredients,
         getIngredient as getDishIngredient,
         addIngredient as addDishIngredient,
+        updateIngredient as updateDishIngredient,
         removeIngredient as removeDishIngredient } from "../service/dishService.mjs";
 import {handleError,doValidation,restError} from "./controllerCommon.mjs";
 import {isEmptyObject} from "../utils/utils.mjs";
@@ -21,8 +22,8 @@ export async function create(request,response)
     logger.funcStart(funcName,[request.body]);
     const schema = Joi.object({
         "name": Joi.string().min(1).required(),
-        "portion": Joi.number().min(0),
-        "portion_unit": Joi.any().valid("gram","ounce").required(),
+        "total_weight": Joi.number().min(0),
+        "total_weight_unit": Joi.any().valid("gram","ounce").required(),
         "ingredients": Joi.array().items( Joi.object({
             "id": Joi.number().min(0).required(),
             "number_servings": Joi.number().min(0).required()
@@ -44,8 +45,8 @@ export async function update(request,response)
     logger.funcStart(funcName,[request.body,request.params]);
     const schema = Joi.object({
         "name": Joi.string().min(1).required(),
-        "portion": Joi.number().min(0),
-        "portion_unit": Joi.any().valid("gram","ounce").required()
+        "total_weight": Joi.number().min(0),
+        "total_weight_unit": Joi.any().valid("gram","ounce").required()
     });
     const paramsSchema = Joi.object({
         "dish_id": Joi.number().min(0).required()
@@ -211,6 +212,41 @@ export async function addIngredient(request,response)
             return;
         }
         const output = await addDishIngredient(params.dish_id,body);
+        logger.funcEnd(funcName,output);
+        response.status(200).json(output);
+    } catch(err) {
+        handleError(response,funcName,err)
+    }    
+}
+
+export async function updateIngredient(request,response)
+{
+    const funcName = "dishController.updateIngredient";    
+    logger.funcStart(funcName, [request.params,request.body]);
+    const schema = Joi.object( {
+        "id": Joi.number().min(0).required(),
+        "number_servings": Joi.number().min(0).required()
+    });
+    const paramsSchema = Joi.object( {
+        "dish_id": Joi.number().min(0).required(),
+        "ingredient_id": Joi.number().min(0).required()
+    });
+    try {
+        const params = await doValidation(paramsSchema,request.params);
+        const body = await doValidation(schema,request.body);
+        // make sure dish exists
+        const dish = await findDish(params.dish_id);
+        if ( isEmptyObject(dish) ) {
+            restError(response,404,"Dish not found",funcName);
+            return;
+        }
+        // make sure this ingredient exists
+        const ingredient = await getDishIngredient(params.dish_id,params.ingredient_id);
+        if ( isEmptyObject(ingredient) ) {
+            restError(response,404,"Ingredient not found",funcName);
+            return;
+        }
+        const output = await updateDishIngredient(params.dish_id,params.ingredient_id,body.number_servings);
         logger.funcEnd(funcName,output);
         response.status(200).json(output);
     } catch(err) {

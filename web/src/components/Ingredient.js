@@ -7,32 +7,33 @@ import { deleteIngredient, getIngredients, searchIngredients } from "../fetchDat
 export default function Ingredient(props)
 {
     const [ ingredientData, setIngredientData ] = React.useState([]);
-
+    
     async function onHandleSearchSubmit(searchData)
     {
         const data = await searchIngredients(searchData);
         setIngredientData(data);
     }
 
-    async function onHandleDelete(ingredientUUID)
+    async function onHandleDelete(ingredientID)
     {
-        await deleteIngredient(ingredientUUID);
-        const data = await getIngredients();
-        setIngredientData(data);
+        // delete ingredient from dishes
+        await deleteIngredient(ingredientID);
+        const ingredients = await getIngredients();
+        setIngredientData(ingredients.data);
     }
 
     React.useEffect( () => {
         async function getIngredientData()
         {
-            const data = await getIngredients();
-            setIngredientData(data)
+            const ingredients = await getIngredients();
+            setIngredientData(ingredients.data)
         }
         getIngredientData();
     }, []);
 
     const ingredientList = ingredientData.map(ingredient => (
         <IngredientListItem
-            key={ingredient.uuid}
+            key={ingredient.id}
             data={ingredient}
             onDelete={onHandleDelete}
         />

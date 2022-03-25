@@ -32,12 +32,10 @@ export default function AddIngredient()
                 [name]: value
             }
         });
-        console.log(ingredientData);
     }
 
     function onHandleClear()
     {
-        console.log("onHandleClear");
         setIngredientData( () => {
             return {
                 "name": "",

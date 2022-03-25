@@ -118,7 +118,7 @@ export async function remove(request,response)
     });
     try {
         const params = await doValidation(schema,request.params);
-        const ingredient = await findIngredient(params.ingredient.id);
+        const ingredient = await findIngredient(params.ingredient_id);
         if ( isEmptyObject(ingredient) ) {
             restError(response,404,"Not found",funcName);
             return;

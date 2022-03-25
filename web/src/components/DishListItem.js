@@ -2,30 +2,32 @@ import React from "react";
 import { Link } from "react-router-dom";
 import "../style.css";
 
-export default function ComponentListItem(props)
+export default function DishListItem(props)
 {
-    const { name, ingredients, portion, portion_unit, uuid } = props.data;
+    const { name, ingredients, total_weight, total_weight_unit, id } = props.data;
 
-    const unit = portion > 1 ? portion_unit + 's' : portion_unit;
-    let calories = 0;
+    const unit = total_weight > 1 ? total_weight_unit + 's' : total_weight_unit;
+    let total_calories = 0;
     
     const ingredientList = ingredients.map( ingredient => {
-        calories += ( ingredient.calories_per_serving * ingredient.serving_size );
+        let ingredient_calories = ( ingredient.calories_per_serving * ingredient.number_servings );
+        total_calories += ingredient_calories;
         return (
-            <li key={ingredient.uuid}>{ingredient.name} Servings: {ingredient.serving_size}</li>
+            <li key={ingredient.id}>{ingredient.name} {Math.trunc(ingredient_calories)} calories</li>
         )
     });
 
     return (
         <ul className="dishItem">
             <li>
-            <Link to="/updateDish" state={{"uuid":uuid}}>
-                {name}
-            </Link>
-            {portion} {unit} {`${Math.trunc(calories)} calories`}
-            <ul className="dishIngredientItem">
-                {ingredientList}
-            </ul>
+                <Link to="/dishDetails" state={{"id":id}}>
+                    {name}
+                </Link>
+                {`${Math.trunc(total_calories)} calories`}
+                <button type="button" onClick={()=> props.onDelete(id)}>Delete</button>
+                <ul className="dishIngredientItem">
+                    {ingredientList}
+                </ul>
             </li>
         </ul>
     )

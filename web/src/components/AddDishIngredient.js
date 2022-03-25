@@ -4,29 +4,26 @@ import SearchForm from "./SearchForm";
 
 import { getDish, getIngredients, searchIngredients } from "../fetchData.js";
 
-
 export default function AddDishIngredient()
 {
     const location = useLocation();
     const state = location.state;
-    console.log("addDishIngredient state:",state);
     
     const [ ingredientData, setIngredientData] = React.useState([]);
     const [ dishData, setDishData] = React.useState({});
 
-    const getDishData = React.useCallback( async () => {
-        const data = await getDish(state.uuid);
-        setDishData(data);
-    }, [state.uuid]);
-
     React.useEffect( () => {
         async function getIngredientData() {
-            const data = await getIngredients();
-            setIngredientData(data);
+            const ingredients = await getIngredients();
+            setIngredientData(ingredients.data);
         }
         getIngredientData();
+        async function getDishData() {
+            const data = await getDish(state.id);
+            setDishData(data);
+        }
         getDishData();
-    }, [getDishData]);
+    }, [state.id]);
 
     async function onHandleSearchSubmit(searchData)
     {
@@ -34,13 +31,13 @@ export default function AddDishIngredient()
         setIngredientData(data);
     }
 
-    function isIngredientInDish(ingredientUUID)
+    function isIngredientInDish(ingredientID)
     {
         if ( typeof dishData.ingredients == "undefined" ) {
             return false;
         }
         for ( const ingredient of dishData.ingredients) {
-            if ( ingredient.uuid === ingredientUUID ) {
+            if ( ingredient.id === ingredientID ) {
                 return true;
             }
         }
@@ -49,9 +46,9 @@ export default function AddDishIngredient()
 
     function AddButton(props)
     {
-        const ingredientUUID = props.uuid;
+        const ingredientID = props.id;
         return (
-            <Link to="/editDishIngredient" state={{"ingredientUUID": ingredientUUID, "dishUUID":state.uuid}}>
+            <Link to="/editDishIngredient" state={{"ingredientID": ingredientID, "dishID":state.id, "from":"/addDishIngredient"}}>
                 <button type="button">Add</button>
             </Link>
         )
@@ -59,25 +56,25 @@ export default function AddDishIngredient()
 
     function DishIngredientListItem(props)
     {
-        const { name, number_servings, uuid } = props.data;
+        const { name, number_servings, id } = props.data;
         return (
             <ul className="ingredientItem">
                 <li>
-                    {name} {number_servings} <AddButton uuid={uuid}/>
+                    {name} {number_servings} <AddButton id={id}/>
                 </li>
             </ul>
         )
     }
    const ingredientList = ingredientData.map(ingredient => {
-        console.log(ingredient.uuid);
         return (
-            isIngredientInDish(ingredient.uuid) ? "" : <DishIngredientListItem key={ingredient.uuid} data={ingredient}/>
+            isIngredientInDish(ingredient.id) ? "" : <DishIngredientListItem key={ingredient.id} data={ingredient}/>
         )
     });
     
     return (
         <div>
             <h1>List Ingredients</h1>
+            <Link to="/updateDish" state={{"id":state.id}}>Back</Link>
             <SearchForm
                 onHandleSubmit={onHandleSearchSubmit}
             />

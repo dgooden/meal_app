@@ -1,5 +1,5 @@
 import React from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, Link } from "react-router-dom";
 
 import { getIngredient, updateIngredient } from "../fetchData.js";
 
@@ -26,14 +26,13 @@ export default function UpdateIngredient()
     );
 
     React.useEffect( () => {
-        console.log("useEffect");
         async function getIngredientData()
         {
-            const data = await getIngredient(state.uuid);
+            const data = await getIngredient(state.id);
             setIngredientData(data);
         }
         getIngredientData();
-    }, [state.uuid]);
+    }, [state.id]);
 
     
     function onHandleChange(event)
@@ -50,7 +49,6 @@ export default function UpdateIngredient()
     function onHandleSubmit(event)
     {
         event.preventDefault();
-        console.log("update ingredient submit");
         const output = updateIngredient(ingredientData);
         if ( output.isError ) {
             setErrorData( () => {
@@ -63,7 +61,8 @@ export default function UpdateIngredient()
 
     return (
         <div>
-            <h1>Update Ingredient</h1>
+            <h1>Ingredient Details</h1>
+            <Link to="/ingredient"> Back</Link>
             <form onSubmit={onHandleSubmit}>
                 <label htmlFor="name">Name</label>
                 <input type="text" id="name" placeholder="Name" onChange={onHandleChange} name="name" value={ingredientData.name}/>

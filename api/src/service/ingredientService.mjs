@@ -1,5 +1,6 @@
 import logger from "../utils/logger.mjs";
 import db from "../utils/db.mjs";
+import { convertOuncesToGrams } from "../utils/utils.mjs";
 
 import SQLBuilder from "../utils/SQLBuilder.mjs";
 
@@ -14,6 +15,20 @@ function handleSort(sort)
         }
     }
     return output;
+}
+
+function calculateServingSizeInGrams(serving_size,serving_unit)
+{
+    switch(serving_unit) {
+        case "teaspoon":
+        case "tablespoon":
+            return 0;
+        case "gram":
+            return serving_size;
+        case "ounce":
+            return convertOuncesToGrams(serving_size);
+    }
+    return 0;
 }
 
 export async function create(data)
@@ -78,9 +93,15 @@ export async function list(limit,offset,sort,name)
         const totalCount = countRows[0].total;
         const rows = await db.select(sql);
         const pageCount = rows.length;
-        let output = [];
+        let output = {
+            "totalCount": totalCount,
+            "currentCount": pageCount,
+            "data": []
+        };
         for ( const row of rows ) {
-            output.push(row);
+
+            row.serving_size_in_grams = calculateServingSizeInGrams(row.serving_size,row.serving_unit);
+            output.data.push(row);
         }
         return output;
     } catch(err) {
@@ -100,6 +121,8 @@ export async function find(ingredientID)
         const rows = await db.select(sql,[ingredientID]);
         if ( rows.length ) {
             output = rows[0];
+            output.serving_size_in_grams = calculateServingSizeInGrams(output.serving_size,output.serving_unit);
+
         }
         return output;
     } catch(err) {

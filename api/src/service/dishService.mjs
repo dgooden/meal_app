@@ -1,6 +1,8 @@
 import logger from "../utils/logger.mjs";
 import db from "../utils/db.mjs";
 import SQLBuilder from "../utils/SQLBuilder.mjs";
+import { convertOuncesToGrams } from "../utils/utils.mjs";
+
 
 function handleSort(sort)
 {
@@ -13,6 +15,18 @@ function handleSort(sort)
         }
     }
     return output;
+}
+
+function calculateTotalWeightInGrams(total_weight,total_weight_unit)
+{
+    switch(total_weight_unit)
+    {
+        case "gram": 
+            return total_weight;
+        case "ounce":
+            return convertOuncesToGrams(total_weight);
+    }
+    return 0;
 }
 
 async function getIngredientDataByID(ingredientID)
@@ -62,8 +76,8 @@ export async function create(data)
     const funcName = "dishService.create";
     logger.funcStart(funcName,data);
     try {
-        let sql = "INSERT INTO dish (name,portion,portion_unit) VALUES (?,?,?)";
-        const result = await db.write(sql,[data.name,data.portion,data.portion_unit]);
+        let sql = "INSERT INTO dish (name,total_weight,total_weight_unit) VALUES (?,?,?)";
+        const result = await db.write(sql,[data.name,data.total_weight,data.total_weight_unit]);
         const dishID = result[0].insertId;
         for ( const ingredient of data.ingredients ) {
             sql = "INSERT INTO dish_ingredient (dish_id,ingredient_id,number_servings) VALUES (?,?,?)";
@@ -84,8 +98,8 @@ export async function update(dishID,data)
     const funcName = "dishService.update";
     logger.funcStart(funcName,[dishID,data]);
     try {
-        const sql = "UPDATE dish SET name = ?, portion = ?, portion_unit = ? WHERE id = ?";
-        await db.write(sql,[data.name,data.portion,data.portion_unit,dishID]);
+        const sql = "UPDATE dish SET name = ?, total_weight = ?, total_weight_unit = ? WHERE id = ?";
+        await db.write(sql,[data.name,data.total_weight,data.total_weight_unit,dishID]);
 
         const output = await find(dishID);
         logger.funcEnd(funcName,output);
@@ -125,11 +139,15 @@ export async function list(limit,offset,sort,name)
         const rows = await db.select(sql);
         const pageCount = rows.length;
         console.log("page count",pageCount);
-        let output = [];
-
+        let output = {
+            "totalCount": totalCount,
+            "currentCount": pageCount,
+            "data" : []
+        };
         for ( const row of rows ) {
             row.ingredients = await getIngredientsForDish(row.id);
-            output.push(row);
+            row.total_weight_in_grams = calculateTotalWeightInGrams(row.total_weight,row.total_weight_unit);
+            output.data.push(row);
         }
         logger.funcEnd(funcName,output);
         return output;        
@@ -151,6 +169,7 @@ export async function find(dishID)
         if ( rows.length ) {
             let row = rows[0];
             row.ingredients = await getIngredientsForDish(dishID);
+            row.total_weight_in_grams = calculateTotalWeightInGrams(row.total_weight,row.total_weight_unit);
             output = row;
         }
         return output;
@@ -229,6 +248,23 @@ export async function addIngredient(dishID,data)
         logger.funcEnd(funcName,err);
         throw err;
     }   
+}
+
+export async function updateIngredient(dishID,ingredientID,number_servings)
+{
+    const funcName = "dishService.updateIngredient";
+    logger.funcStart(funcName,[dishID,ingredientID,number_servings]);
+    try {
+        const sql = "UPDATE dish_ingredient SET number_servings = ? WHERE dish_id =? AND ingredient_id =?";
+        await db.write(sql,[number_servings,dishID,ingredientID]);
+        const output = await find(dishID);
+        logger.funcEnd(funcName,output);
+        return output;
+    } catch(err) {
+        logger.error(funcName + " error: ", err.stack);
+        logger.funcEnd(funcName,err);
+        throw err;
+    }  
 }
 
 export async function removeIngredient(dishID,ingredientID)
