@@ -61,20 +61,30 @@ export default function AddDish()
     }
 
     return (
-        <div>
-            <h1>Add Dish</h1>
+        <div className="main-container">
+            <h1 className="main-header">Add Dish</h1>
             <Link to="/dish">Back</Link>
-            <form onSubmit={onHandleSubmit}>
-                <label htmlFor="name">Name</label>
-                <input type="text" id="name" name="name" value={dishData.name} placeholder="Name" onChange={onHandleChange}/>
-                <label htmlFor="total_weight">Total weight</label>
-                <input type="text" id="total_weight" name="total_weight" value={dishData.total_weight} placeholder="Total weight" onChange={onHandleChange}/>
-                <select id="total_weight_unit" name="total_weight_unit" value={dishData.total_weight_unit} onChange={onHandleChange}>
-                    <option value="gram">Grams</option>
-                    <option value="ounce">Ounces</option>
-                </select>
-                <button type="submit">Add Dish</button>
-                <button type="button" onClick={onHandleClear}>Clear</button>
+            <form className="add-dish-form" onSubmit={onHandleSubmit}>
+                <label className="add-dish-form-label" htmlFor="name">Name</label>
+                <div className="add-dish-form-item">
+                    <div className="add-dish-form-group">
+                        <input className="add-dish-input" type="text" id="name" name="name" value={dishData.name} placeholder="Name" onChange={onHandleChange}/>
+                    </div>
+                </div>
+                <label className="add-dish-form-label" htmlFor="total_weight">Total weight</label>
+                <div className="add-dish-form-item">
+                    <input type="text" id="total_weight" name="total_weight" value={dishData.total_weight} placeholder="Total weight" onChange={onHandleChange}/>
+                </div>
+                <div className="add-dish-form-extra">
+                    <select id="total_weight_unit" name="total_weight_unit" value={dishData.total_weight_unit} onChange={onHandleChange}>
+                        <option value="gram">Grams</option>
+                        <option value="ounce">Ounces</option>
+                    </select>
+                </div>
+                <div className="add-dish-form-item">
+                    <button className="add-dish-button" type="submit">Add Dish</button>
+                    <button className="add-dish-button" type="button" onClick={onHandleClear}>Clear</button>
+                </div>
             </form>
             <div className="error">{errorData.code > 200 ? errorData.errorMessage  : ""}</div>
         </div>

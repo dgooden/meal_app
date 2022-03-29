@@ -1,9 +1,14 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import DishListItem from "./DishListItem";
 import SearchForm from "./SearchForm";
 
 import { getDishes, deleteDish, searchDishes } from "../fetchData.js";
+
+/*
+    [   ] [search] [clear]  or [magnifing glass] [X (clear)]     [Add dish] or [+]
+    
+    list of dish names, linkName
+*/
 
 export default function Dish(props)
 {
@@ -15,12 +20,7 @@ export default function Dish(props)
         setDishData(dishes.data);
     }
 
-    async function onHandleDelete(dishID)
-    {
-        await deleteDish(dishID);
-        const dishes = await getDishes();
-        setDishData(dishes.data);
-    }
+
 
     React.useEffect( () => {
         async function getDishData()
@@ -31,24 +31,39 @@ export default function Dish(props)
         getDishData();
     }, []);
 
+
+    function DishListItem(props)
+    {
+        const { id, name } = props.data;
+        return (
+            <li>
+                <Link to="/dishDetails" state={{"id":id}}>
+                    {name}
+                </Link>
+            </li>
+        )
+    }
+
     const dishList = dishData.map( dish => {
         return (
             <DishListItem
                 key={dish.id}
                 data={dish}
-                onDelete={onHandleDelete}
             />
         )});
 
     return (
-        <div>
+        <div className="main-container">
+            <h1 className="main-header">Dishes</h1>
             <SearchForm
                 onHandleSubmit={onHandleSearchSubmit}
             />
             <Link to="/addDish">
-                <button type="button">Add Dish</button>
+                <button className="add-button" type="button">Add Dish</button>
             </Link>
-            {dishList}
+            <ul className="dish-items">            
+                {dishList}
+            </ul>
         </div>
     )
 }

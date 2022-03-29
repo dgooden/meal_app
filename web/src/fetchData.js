@@ -104,6 +104,36 @@ export async function updateDishIngredient(dishID,ingredientID,data)
     }
 }
 
+export async function deleteDishIngredient(dishID,ingredientID)
+{
+    let output = {
+        "isError": false,
+        "result": {}
+    };
+    try {
+        const response = await fetch(`${BASEURL}/dish/${dishID}/ingredient/${ingredientID}`, {
+            "method": "DELETE",
+            "cache": "no-cache"
+        });        
+        if ( ! response.ok ) {
+            output.isError = true;
+            output.result = {
+                "code": response.status,
+                "errorMessage": response.statusText
+            }
+        }
+    } catch(err) {
+        console.log("Fetch error");
+        output.isError = true;
+        output.result = {
+            "code": 500,
+            "errorMessage": "A network error has occurred"
+        };
+        return output;
+    }
+}
+
+
 export async function getDish(id)
 {
     const response = await fetch(`${BASEURL}/dish/${id}`);

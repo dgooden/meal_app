@@ -143,12 +143,9 @@ export default function UpdateDish()
         const { name, number_servings, calories_per_serving} = props.data;
         let calories = ( calories_per_serving * number_servings );
         return (
-            <ul className="ingredientItem">
-                <li>
-                    {name}
-                    {Math.trunc(calories)} calories
-                </li>
-            </ul>
+            <li>
+                {name}
+            </li>
         )
     }
 
@@ -160,27 +157,48 @@ export default function UpdateDish()
     });
 
     return (
-        <div>
-            <h1>Dish Details</h1>
+        <div className="main-container">
+            <h1 className="main-header">Dish Details</h1>
             <Link to="/dish">Back</Link>
             <div className="error">{errorData.code > 200 ? errorData.errorMessage  : ""}</div>
-            Name: {dishData.name}
-            Total weight: {dishData.total_weight} { dishData.total_weight_unit}
-            Total calories: {Math.trunc(total_calories)}
-            <Link to="/updateDish" state={{"id":state.id}}>
-                <button type="button">Edit Dish</button>                
-            </Link>
-            <form>
-                <label htmlFor="portion">Portion</label>
-                <input type="text" id="portion" name="portion" value={portionData.portion} placeholder="0" onChange={onHandlePortionChange}/>
-                <select id="portion_unit" name="portion_unit" value={portionData.portion_unit} onChange={onHandlePortionChange}>
-                    <option value="gram">Grams</option>
-                    <option value="ounce">Ounces</option>
-                </select>
-                <label htmlFor="portion_calories">Portion calories</label>
-                <input type="text" id="portion_calories" name="portion_calories" value={portionData.portion_calories} placeholder="0" onChange={onHandlePortionChange}/>                         
+
+            <div className="dish-details-container">
+                <div className="dish-details-name">Name:</div>
+                <div className="dish-details-details">{dishData.name}</div>
+                <div className="dish-details-name">Total weight:</div> 
+                <div className="dish-details-details">{dishData.total_weight} { dishData.total_weight_unit}</div>
+                <div className="dish-details-name">Total calories:</div> 
+                <div className="dish-details-details">{Math.trunc(total_calories)}</div>
+                <div className="dish-details-both">
+                    <Link to="/updateDish" state={{"id":state.id}}>
+                        <button type="button">Edit Dish</button>                
+                    </Link>
+                </div>
+            </div>
+            <form className="dish-details-container">
+                <div className="dish-details-name">
+                    <label htmlFor="portion">Portion Size:</label>
+                </div>
+                <div className="dish-details-details">
+                    <input className="input-ninechar-width" type="text" id="portion" name="portion" value={portionData.portion} placeholder="0" onChange={onHandlePortionChange}/>
+                    <select id="portion_unit" name="portion_unit" value={portionData.portion_unit} onChange={onHandlePortionChange}>
+                        <option value="gram">Grams</option>
+                        <option value="ounce">Ounces</option>
+                    </select>
+                </div>
+                <div className="dish-details-name">
+                    <label htmlFor="portion_calories">Portion calories</label>
+                </div>
+                <div className="dish-details-details">
+                    <input className="input-ninechar-width" type="text" id="portion_calories" name="portion_calories" value={portionData.portion_calories} placeholder="0" onChange={onHandlePortionChange}/>                         
+                </div>
             </form>
-            {ingredientList}
+            <div>
+                <h3>Ingredients</h3>
+                <ul className="dish-ingredient-items">                
+                    {ingredientList}
+                </ul>
+            </div>
         </div>
     )
 }

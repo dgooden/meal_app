@@ -14,11 +14,17 @@ function App() {
     <BrowserRouter>
       <div>
         <header>
-          <h1>Meal</h1>
-          <ul>
-            <li><NavLink to="/dish">Dish</NavLink></li>
-            <li><NavLink to="/ingredient">Ingredients</NavLink></li>
-          </ul>
+          <nav className="navbar">
+            <ul className="navbar-items">
+              <li className="navbar-item">
+                <NavLink to="/dish" style={ ({isActive}) => ({
+                  textDecoration: isActive ? "underline" : "none"
+                })}>Dish</NavLink></li>
+              <li className="navbar-item"><NavLink to="/ingredient"  style={ ({isActive}) => ({
+                  textDecoration: isActive ? "underline" : "none"
+                })}>Ingredients</NavLink></li>
+            </ul>
+          </nav>
         </header>
         <main>
           <Routes>

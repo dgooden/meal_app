@@ -5,7 +5,8 @@ import { getIngredient,
          getDish, 
          getDishIngredient,
          addDishIngredient,
-         updateDishIngredient } from "../fetchData";
+         updateDishIngredient,
+         deleteDishIngredient } from "../fetchData";
 
 export default function EditDishIngredient()
 {
@@ -13,6 +14,10 @@ export default function EditDishIngredient()
     const location = useLocation();
     const state = location.state;
     const { dishID, ingredientID, from } = state;
+
+    if ( from == "/addDishIngredient" ) {
+
+    }
 
     const [ ingredientData, setIngredientData ] = React.useState({});
     const [ ingredientServings, setIngredientServings ] = React.useState({
@@ -69,6 +74,15 @@ export default function EditDishIngredient()
         navigate("/updateDish", { "state": { "id": dishID}});
     }
 
+    async function onHandleRemoveIngredient()
+    {
+        const result = await getDishIngredient(dishID,ingredientID);
+        if ( ! result.isError ) {
+            await deleteDishIngredient(dishID,ingredientID);
+        }
+        navigate("/updateDish", { "state": { "id": dishID}});
+    }
+
     React.useEffect( () => {
         async function getIngredientData()
         {
@@ -83,7 +97,6 @@ export default function EditDishIngredient()
                 data = dishIngredient.result;
             }
             setIngredientData(data);
-            console.log(data);
             let servingData = {
                 "number_servings": data.number_servings,
                 "portion_size": calculatePortionSize(data.serving_size,data.number_servings)
@@ -93,22 +106,66 @@ export default function EditDishIngredient()
         getIngredientData();
     }, []);
 
-    return (
-        <div>
-            <h1>Edit Dish Ingredient</h1>
-            <Link to={from} state={{"id":dishID}}>Back</Link>
-            <form onSubmit={onHandleSubmit}>
-                {ingredientData.name}
-                {ingredientData.serving_size} 
-                {ingredientData.serving_unit}
-                {ingredientData.calories_per_serving} calories
+    function showServingSize()
+    {
+        let unit = ingredientData.serving_unit;
+        unit += (ingredientData.serving_size > 1 ) ? "s" : "";
+        return `${ingredientData.serving_size} ${unit}`;
+    }
 
-                <label htmlFor="number_servings">Number of servings</label>
-                <input type="text" id="number_servings" name="number_servings" value={ingredientServings.number_servings} placeholder="0" onChange={onHandleChange}/>
-                <label htmlFor="portion_size">Portion size</label>
-                <input type="text" id="portion_size" name="portion_size" value={ingredientServings.portion_size} placeholder="0" onChange={onHandleChange}/>                
-                {ingredientData.serving_unit}
-                <button type="submit">Submit</button>
+    function showRemoveButton()
+    {
+        if ( from != "/addDishIngredient") {
+            return (
+                <button type="button" onClick={onHandleRemoveIngredient}>Remove</button>
+            )
+        }
+        return;
+    }
+
+    return (
+        <div className="main-container">
+            <h1 className="main-header">Edit Dish Ingredient</h1>
+            <Link to={from} state={{"id":dishID}}>Back</Link>
+            <form className="edit-dish-ingredient-form" onSubmit={onHandleSubmit}>
+                <div className="edit-dish-ingredient-label">
+                    Name:
+                </div>
+                <div className="edit-dish-ingredient-details">
+                    {ingredientData.name}
+                </div>
+                <div className="edit-dish-ingredient-label">
+                    Serving Size:
+                </div>
+                <div className="edit-dish-ingredient-details">
+                    {showServingSize()}
+                </div>
+                <div className="edit-dish-ingredient-label">
+                    Calories:
+                </div>
+                <div className="edit-dish-ingredient-details">
+                    {ingredientData.calories_per_serving}
+                </div>
+                <div className="edit-dish-ingredient-label">
+                    <label htmlFor="number_servings">Number of servings</label>
+                </div>
+                <div className="edit-dish-ingredient-details">
+                    <input className="input-ninechar-width" type="text" id="number_servings" name="number_servings" value={ingredientServings.number_servings} placeholder="0" onChange={onHandleChange}/>
+                </div>
+                <div className="edit-dish-ingredient-label">
+                    <label htmlFor="portion_size">Portion size</label>
+                </div>
+                <div className="edit-dish-ingredient-details">
+                    <input className="input-ninechar-width" type="text" id="portion_size" name="portion_size" value={ingredientServings.portion_size} placeholder="0" onChange={onHandleChange}/>                
+                    <select id="serving_unit" onChange={onHandleChange} name="serving_unit" value={ingredientData.serving_unit}>
+                        <option value="gram">Grams</option>
+                        <option value="ounce">Ounces</option>
+                    </select>                
+                </div>
+                <div className="edit-dish-ingredient-full-width">
+                    <button type="submit">{ ( from == "/addDishIngredient" ) ? "Add" : "Update"}</button>
+                    {showRemoveButton()}
+                </div>
             </form>
         </div>
     )

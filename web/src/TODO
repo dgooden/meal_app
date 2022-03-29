@@ -1,19 +1,4 @@
-make use of new API calls for ingredients in dishes
+Edit Dish ingredient portion size toggle should work
 
 Handle pagination of ingredients and dishes
-More error handling in fetchData
-
-
-DISH DETAILS (NOT UPDATE ANYMORE)
-
-Dish name: [xxxxx]
-Total Calories: (calculated)
-Total Weight: [xxxx] [Gram] [Ounces]
-
-Portion : [XXX]
-Portion Calories: [XXX]
-
-Ingredients:
-    Name
-        X GRAMS/OUNCES/ETC
-        X Calories
+More error handling in fetch

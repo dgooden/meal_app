@@ -1,16 +1,172 @@
-.ingredientList {
-    list-style-type: none;
+.navbar {
+    border: 1px solid;
+    margin: auto;
+    width: 50%;
+}
+
+.navbar-items {
     display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
 }
 
-.ingredientItem {
-    flex: auto;
+.navbar-item {
+    padding: 10px 15px;
+    text-decoration: none;
 }
 
-.dishItem {
+.main-container {
+    margin: auto;
+    width: 50%;
+}
+
+.search-form-container {
+    display: grid;
+    grid-template-columns: [input] 30% [search] 1fr;
+    grid-column-gap: 8px;
+}
+
+.search-form-input {
+    grid-column: input;
+}
+
+.search-form-button {
+    grid-column: search;
+    width: fit-content;
+}
+
+.dish-items {
+    padding: 0px;
     list-style-type: none;
 }
 
-.dishIngredientItem {
+.dish-ingredient-items {
+    padding: 0px;
     list-style-type: none;
+}
+
+.add-dish-form {
+    display: grid;
+    grid-template-columns: [formLabel] 20% [formContent] 1fr [formExtra] 1fr;
+    grid-gap: 8px;
+}
+
+.add-dish-button {
+    width: fit-content;
+    margin-right: 1%;
+}
+
+.add-dish-form-label {
+    grid-column: formLabel;
+}
+
+.add-dish-form-item {
+    grid-column: formContent;  
+}
+
+.add-dish-form-extra {
+    grid-column: formExtra;  
+}
+.add-dish-input {
+    width: 98%;
+}
+
+.add-dish-form-full-width {
+    grid-column: span 3;
+}
+
+.dish-details-container {
+    display: grid;
+    grid-template-columns: [name] 20% [details] 1fr;
+}
+
+.dish-details-name {
+    grid-column: name;
+}
+
+.dish-details-details {
+    grid-column: details;
+}
+
+.dish-update-form {
+    display: grid;
+    grid-template-columns: [dishUpdateLabel] 20% [dishUpdateDetails] 1fr;
+}
+
+.dish-update-label {
+    grid-column: dishUpdateLabel;
+}
+
+.dish-update-details {
+    grid-column: dishUpdateDetails;
+}
+
+.dish-update-full-width {
+    grid-column: 1/-1;
+}
+
+.add-dish-ingredient-list {
+    list-style-type: none;
+    padding: 0px;
+}
+
+.edit-dish-ingredient-form {
+    display: grid;
+    grid-template-columns: [editDishIngredientLabel] 20% [editDishIngredientDetails] 1fr;
+}
+
+.edit-dish-ingredient-label {
+    grid-column: editDishIngredientLabel;
+}
+
+.edit-dish-ingredient-details {
+    grid-column: editDishIngredientDetails;
+}
+
+.edit-dish-ingredient-full-width {
+    grid-column: 1/-1;
+}
+
+.ingredient-list {
+    list-style-type: none;
+    padding: 0px;
+}
+
+.edit-ingredient-form {
+    display: grid;
+    grid-template-columns: [editDishIngredientLabel] 20% [editDishIngredientDetails] 1fr;
+}
+
+.edit-ingredient-label {
+    grid-column: editDishIngredientLabel;
+}
+
+.edit-ingredient-details {
+    grid-column: editDishIngredientDetails;
+}
+
+.edit-ingredient-full-width {
+    grid-column: 1/-1;
+}
+
+.add-ingredient-form {
+    display: grid;
+    grid-template-columns: [addDishIngredientLabel] 20% [addDishIngredientDetails] 1fr;
+}
+
+.add-ingredient-label {
+    grid-column: addDishIngredientLabel;
+}
+
+.add-ingredient-details {
+    grid-column: addDishIngredientDetails;
+}
+
+.add-ingredient-full-width {
+    grid-column: 1/-1;
+}
+
+.input-ninechar-width {
+    width: 9ch;
 }

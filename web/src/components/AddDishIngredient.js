@@ -58,7 +58,7 @@ export default function AddDishIngredient()
     {
         const { name, number_servings, id } = props.data;
         return (
-            <ul className="ingredientItem">
+            <ul className="add-dish-ingredient-list">
                 <li>
                     {name} {number_servings} <AddButton id={id}/>
                 </li>
@@ -72,8 +72,8 @@ export default function AddDishIngredient()
     });
     
     return (
-        <div>
-            <h1>List Ingredients</h1>
+        <div className="main-container">
+            <h1 className="main-header">List Ingredients</h1>
             <Link to="/updateDish" state={{"id":state.id}}>Back</Link>
             <SearchForm
                 onHandleSubmit={onHandleSearchSubmit}
